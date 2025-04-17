@@ -1,10 +1,10 @@
-# SysAdmin-Toolkit
+# sysadmin-toolkit
 
-A practical SysAdmin-Toolkit: A collection of versatile shell scripts to automate routine tasks, simplify system management, and enhance operational efficiency for Linux/Unix administrators.
+A practical sysadmin-toolkit: A collection of versatile shell scripts to automate routine tasks, simplify system management, and enhance operational efficiency for Linux/Unix administrators.
 
 ## Overview
 
-Welcome to the SysAdmin-Toolkit! This repository gathers a range of shell scripts aimed at simplifying and automating common tasks faced by system administrators and operations engineers. The toolkit covers areas like OS management, networking, storage, monitoring, virtualization, security, user management, and more.
+Welcome to the sysadmin-toolkit! This repository gathers a range of shell scripts aimed at simplifying and automating common tasks faced by system administrators and operations engineers. The toolkit covers areas like OS management, networking, storage, monitoring, virtualization, security, user management, and more.
 
 The scripts are organized into logical directories based on their function. Each script aims to be practical and solve specific, real-world problems encountered in system management.
 
@@ -55,8 +55,8 @@ Most scripts are written for `bash` and standard Linux/Unix environments. Specif
 Clone the repository to your local machine:
 
 ```
-git clone https://github.com/0xbaha/SysAdmin-Toolkit.git
-cd SysAdmin-Toolkit
+git clone https://github.com/0xbaha/sysadmin-toolkit.git
+cd sysadmin-toolkit
 ```
 
 ## Usage
@@ -72,7 +72,7 @@ cd SysAdmin-Toolkit
 The repository is organized using a comprehensive set of functional categories directly under the root directory. Empty categories serve as placeholders for future additions.
 
 ```
-SysAdmin-Toolkit/
+sysadmin-toolkit/
 ├── .git/
 ├── .gitignore
 ├── LICENSE
