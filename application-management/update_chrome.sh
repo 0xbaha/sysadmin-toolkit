@@ -263,7 +263,7 @@
 # =========================================================================================
 # SUPPORT & CONTACT
 # =========================================================================================
-# - Author/Maintainer: Baharuddin Aziz
+# - Author/Maintainer: Baha
 # - Contact: contact [at] baha.my.id
 # - Website: https://baha.my.id
 # - Bug Reports/Issues: Report via Repository link if available (https://baha.my.id/github) or Contact email.

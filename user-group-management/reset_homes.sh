@@ -356,7 +356,7 @@
 # =========================================================================================
 # SUPPORT & CONTACT
 # =========================================================================================
-# - Author/Maintainer: Baha (Baharuddin Aziz)
+# - Author/Maintainer: Baha
 # - Contact: contact [at] baha.my.id
 # - Bug Reports/Issues: Submit via repository issues tracker if available (e.g., https://baha.my.id/github/issues), otherwise contact the author.
 # - Feature Requests: Submit via repository or contact the author.

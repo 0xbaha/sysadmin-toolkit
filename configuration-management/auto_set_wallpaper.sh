@@ -329,7 +329,7 @@
 # =========================================================================================
 # SUPPORT & CONTACT
 # =========================================================================================
-# - Author/Maintainer: Baha (Baharuddin Aziz)
+# - Author/Maintainer: Baha
 # - Contact: contact [at] baha.my.id
 # - Bug Reports/Issues: Report issues via the script's repository (if available: https://baha.my.id/github) or directly to the author's contact email.
 # - Feature Requests: Submit via repository issues or email.
