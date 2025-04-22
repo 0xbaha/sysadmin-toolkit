@@ -539,34 +539,35 @@ main() {
         log_message "CRITICAL" "Check if Python version '${PYTHON_VERSION}' is available in the PPA and review apt output above."
     fi
 
-        # 6. Final Information
+    # 6. Final Information
     log_message "INFO" "====================================================================="
     log_message "INFO" " System Preparation Script Completed! "
     log_message "INFO" "====================================================================="
 
     # Use echo -e for better readability of the final summary block, removing log prefixes
+    # Add extra \n for spacing before headers
     echo -e "\n${COLOR_GREEN}Your system should now have the basic tools:${COLOR_RESET}"
     echo -e " - Python ${PYTHON_VERSION} (including -dev and -venv packages from deadsnakes PPA)"
     echo -e " - Standard Build tools, git, nginx, postgresql-dev, supervisor, pipx, etc."
 
     # Use WARN color for important notes, but directly via echo
-    echo -e "\n${COLOR_YELLOW}${COLOR_BOLD}VERY IMPORTANT - Using Pip with Python ${PYTHON_VERSION}:${COLOR_RESET}"
+    echo -e "\n\n${COLOR_YELLOW}${COLOR_BOLD}VERY IMPORTANT - Using Pip with Python ${PYTHON_VERSION}:${COLOR_RESET}" # Added extra \n
     echo -e "${COLOR_YELLOW} - The system 'pip3' (if installed separately) likely manages packages for the system's default Python.${COLOR_RESET}"
     echo -e "${COLOR_YELLOW} - To install packages specifically for Python ${PYTHON_VERSION}, you MUST use a virtual environment.${COLOR_RESET}"
 
     # Use a different color for next steps/commands
-    echo -e "\n${COLOR_BLUE}Next Steps for Your Project:${COLOR_RESET}"
+    echo -e "\n\n${COLOR_BLUE}${COLOR_BOLD}Next Steps for Your Project:${COLOR_RESET}" # Added extra \n and bold
     echo -e " 1. Create environment: ${COLOR_CYAN}${python_pkg} -m venv path/to/your/venv${COLOR_RESET}"
     echo -e " 2. Activate environment: ${COLOR_CYAN}source path/to/your/venv/bin/activate${COLOR_RESET}"
     echo -e " 3. Install packages: ${COLOR_CYAN}pip install <package_name>${COLOR_RESET}  # <-- This pip uses Python ${PYTHON_VERSION}"
     echo -e " 4. Deactivate when done: ${COLOR_CYAN}deactivate${COLOR_RESET}"
 
-    echo -e "\n${COLOR_BLUE}Other Next Steps:${COLOR_RESET}"
+    echo -e "\n\n${COLOR_BLUE}${COLOR_BOLD}Other Next Steps:${COLOR_RESET}" # Added extra \n and bold
     echo -e " - Install global tools cleanly (like Gunicorn): ${COLOR_CYAN}pipx install gunicorn${COLOR_RESET}"
     echo -e " - Configure Nginx, Supervisor, PostgreSQL (users/databases), etc. per project requirements."
 
     # Note about pipx path
-    echo -e "\n${COLOR_YELLOW}Note: If pipx commands don't work in your user shell, you might need to run 'pipx ensurepath' and restart your shell.${COLOR_RESET}\n"
+    echo -e "\n\n${COLOR_YELLOW}${COLOR_BOLD}Note:${COLOR_RESET} ${COLOR_YELLOW}If pipx commands don't work in your user shell, you might need to run 'pipx ensurepath' and restart your shell.${COLOR_RESET}\n" # Added extra \n and bold header
 
     # Note: The final "Script completed successfully." message below this will still use log_message
 
