@@ -1,15 +1,222 @@
 #!/bin/bash
+# SPDX-FileCopyrightText: © 2025 Baha <contact@baha.my.id>
+# SPDX-License-Identifier: MIT
+
+# =========================================================================================
+# SCRIPT METADATA
+# =========================================================================================
+# SCRIPT NAME   : manage_py_env.sh
+# PURPOSE       : Manages Python virtual environment setup within a project.
+# -----------------------------------------------------------------------------------------
+# AUTHOR        : Baha
+# CONTACT       : contact [at] baha.my.id
+# WEBSITE       : https://baha.my.id
+# PROFILE       : https://baha.my.id/linkedin
+# REPOSITORY    : https://baha.my.id/github
+# CREATED ON    : 2025-04-22
+# LAST UPDATED  : 2025-04-22
+# VERSION       : 1.0.0
+# =========================================================================================
+
+# =========================================================================================
+# DESCRIPTION
+# =========================================================================================
+# This script streamlines the management of a Python virtual environment ('venv') for a
+# development project. It assumes the user has already *activated* the virtual
+# environment before running the script.
+#
+# Key Workflow / Functions:
+# - Verifies that a virtual environment (checked via $VIRTUAL_ENV) is currently active. Exits if not.
+# - Checks if the configured Python executable (default: python3) and the 'pip' module
+#   are available within the active venv. Attempts to bootstrap pip using 'ensurepip' if missing.
+# - Locates the 'requirements.txt' file (or configured alternative).
+# - If 'requirements.txt' is missing, it offers to install 'pipreqs' (if not present in venv)
+#   and generate the file based on project imports, ignoring the venv directory.
+# - Prompts the user to install/update packages listed in 'requirements.txt' using 'pip install -r'.
+# - Prompts the user whether to run 'pipreqs' again to update/overwrite the 'requirements.txt'
+#   file based on the current project code.
+# - Uses colored logging for different message levels (DEBUG, INFO, WARN, ERROR, CRITICAL).
+# =========================================================================================
+
+# =========================================================================================
+# PRIMARY AUDIENCE
+# =========================================================================================
+# - Python Developers managing project dependencies.
+# - DevOps Engineers setting up development or CI/CD environments.
+# =========================================================================================
+
+# =========================================================================================
+# USAGE
+# =========================================================================================
+# **Prerequisite:** ACTIVATE YOUR PYTHON VIRTUAL ENVIRONMENT FIRST!
+# Example: `source .venv/bin/activate` (assuming default venv name '.venv')
+#
+# **Permissions:**
+# - Script execution: `chmod +x manage_py_env.sh`
+# - File system access: Read/Write access within the project directory (for requirements.txt)
+#                     and the virtual environment directory (for pip installs).
+# - Network access: Required by pip to download packages and potentially by pipreqs.
+#
+# **Basic Syntax:**
+# `./manage_py_env.sh [options]`
+#
+# **Options:**
+# -h             Display help message (extracted from this header) and exit.
+# -v             Enable verbose output (logs DEBUG messages).
+# # -d           Enable Bash debug mode (`set -x`) - handled manually via set -x below.
+#
+# **Arguments:**
+# None currently supported. Operates on the current directory by default.
+#
+# **Common Examples:**
+# 1. Activate venv and run with default settings:
+#    `source .venv/bin/activate && ./manage_py_env.sh`
+#
+# 2. Activate venv and run with verbose logging:
+#    `source .venv/bin/activate && ./manage_py_env.sh -v`
+#
+# 3. Get help (can be run without activating venv):
+#    `./manage_py_env.sh -h`
+#
+# **Automation:**
+# - Primarily designed for interactive use due to confirmation prompts.
+# - Could be part of a larger setup script if prompts are handled or bypassed (requires modification).
+# =========================================================================================
+
+# =========================================================================================
+# INSTALLATION / DEPLOYMENT
+# =========================================================================================
+# - Place the script in the root directory of your Python project, alongside where your
+#   `.venv` directory and `requirements.txt` file would typically reside.
+# - Make it executable: `chmod +x manage_py_env.sh`
+# =========================================================================================
+
+# =========================================================================================
+# DEPENDENCIES & ENVIRONMENT
+# =========================================================================================
+# **Required Interpreter:**
+# - `/bin/bash`: Bourne-Again SHell interpreter (standard Linux/macOS/WSL).
+#
+# **Required System Binaries/Tools:**
+# - `coreutils`: Provides `basename`, `dirname`, `date`, `cat`, `mkdir`, `touch`, `tr`, `head`, `grep`.
+# - `python3` (or configured PYTHON_EXECUTABLE_DEFAULT): Needed to *create* virtual environments
+#   and usually expected within them. Must be in the system PATH.
+# - `pip` (Python Package Installer): Expected to be available *within* the activated venv.
+#   The script attempts to install it via `ensurepip` if missing in the venv.
+# - `pipreqs`: Optional, but needed for automatic generation/update of requirements.txt.
+#   The script will offer to install `pipreqs` into the venv using pip if it's missing
+#   and generation/update is requested.
+# - `getopts`: Bash built-in for argument parsing.
+# - `command`: Bash built-in for checking command existence.
+#
+# **Setup Instructions:**
+# - Ensure Python 3 is installed on the system: `python3 --version`
+# - Create a virtual environment if one doesn't exist: `python3 -m venv .venv`
+# - Activate the virtual environment before running this script: `source .venv/bin/activate`
+# - `pipreqs` will be handled by the script if needed and confirmed by the user.
+#
+# **Operating System Compatibility:**
+# - Designed primarily for Linux distributions (Ubuntu, CentOS, Fedora, etc.) and macOS.
+# - Should work on Windows Subsystem for Linux (WSL).
+#
+# **Environment Variables Used:**
+# - `VIRTUAL_ENV`: Checked to confirm a virtual environment is active. Set automatically by venv activation.
+# - `PATH`: Standard variable used to find executables (`python3`, `pipreqs` etc.).
+# =========================================================================================
+
+# =========================================================================================
+# LOGGING MECHANISM
+# =========================================================================================
+# **Log Destination(s):**
+# - Standard Output (stdout): INFO and DEBUG messages (DEBUG only if -v is used).
+# - Standard Error (stderr): WARN, ERROR, CRITICAL messages, help text (`-h`). Specific command examples during errors.
+# - Dedicated Log File: No by default (LOG_TO_FILE=false). Can be enabled by setting LOG_TO_FILE=true
+#   and ensuring DEFAULT_LOG_DIR is writable. Path: './logs/manage_py_env_[timestamp].log' (by default)
+#
+# **Log Format:**
+# - Console: `[YYYY-MM-DD HH:MM:SS TZ] [LEVEL] - Message` (Colored)
+# - File (if enabled): `[YYYY-MM-DD HH:MM:SS TZ] [LEVEL] - Message` (No color)
+#
+# **Log Levels:**
+# - DEBUG: Detailed step-by-step info (Enabled by `-v`).
+# - INFO: General operational messages (Default level).
+# - WARN: Potential issues or user skips.
+# - ERROR: Significant errors encountered.
+# - CRITICAL: Severe errors causing script termination.
+# - Control: `-v` flag sets level to DEBUG. Otherwise uses `LOG_LEVEL` variable (default: INFO).
+#
+# **Log Rotation:**
+# - Not handled by the script. Use external tools like `logrotate` if long-term file logging is enabled.
+# =========================================================================================
+
+# =========================================================================================
+# OUTPUTS
+# =========================================================================================
+# **Standard Output (stdout):**
+# - Normal Operation: Status messages (INFO), verbose details (DEBUG).
+# - User Prompts: Asks for confirmation (`read -p`) before installing packages or updating files.
+# **Standard Error (stderr):**
+# - Errors: Prints error messages (ERROR, CRITICAL) and warnings (WARN).
+# - Help Text: Prints usage information when `-h` is used.
+# - Specific Instructions: Prints example commands (e.g., how to activate venv) if prerequisites fail.
+# **Generated/Modified Files:**
+# - `requirements.txt` (or configured REQUIREMENTS_FILE): May be generated or updated (overwritten) using `pipreqs` if confirmed by the user.
+# - Log File: Created in `logs/` directory if `LOG_TO_FILE` is true.
+# - Temporary Files: Not currently used. Cleanup trap is in place for future use.
+# - Installed Packages: Modifies the Python virtual environment by installing/updating packages via pip.
+# =========================================================================================
+
+# =========================================================================================
+# ERROR HANDLING & CONSIDERATIONS
+# =========================================================================================
+# **Exit Codes:**
+# - 0: Success.
+# - 1: General Error (often triggered by `log_message CRITICAL` or `set -e`).
+# - 4: Invalid command-line option/argument (via `usage` function from `getopts`).
+# - Other non-zero codes may be returned by failed external commands (`pip`, `pipreqs`, `python`).
+#
+# **Potential Issues & Troubleshooting:**
+# - **Issue:** "SCRIPT ABORTED: Python virtual environment not active."
+#   **Resolution:** Activate the virtual environment *before* running the script (e.g., `source .venv/bin/activate`). Create one (`python3 -m venv .venv`) if it doesn't exist.
+# - **Issue:** "Could not find 'python3' within the active virtual environment" or "'pip' module not found".
+#   **Resolution:** The activated venv might be corrupted or wasn't created correctly. Try recreating it. Ensure the correct Python version was used to create the venv.
+# - **Issue:** "'pipreqs' failed during file generation" or "Failed to install 'pipreqs'".
+#   **Resolution:** Check network connectivity. Check permissions in the venv directory. Ensure pip is working correctly within the venv. Check pipreqs output for specific errors.
+# - **Issue:** "Failed to install packages using pip from 'requirements.txt'".
+#   **Resolution:** Check network connectivity. Check the syntax of your `requirements.txt`. Check pip's output for specific package conflicts or build errors.
+#
+# **Important Considerations / Warnings:**
+# - **CRITICAL:** This script REQUIRES an active virtual environment. Running it outside may lead to unexpected behavior or errors if checks fail.
+# - **Modification:** Installs packages into the active venv using `pip`.
+# - **Overwrite Risk:** Running `pipreqs` to generate/update `requirements.txt` WILL OVERWRITE the existing file if `--force` is used (as implemented for updates). Review changes carefully.
+# - **Interactive:** Relies on user prompts (`read -p`) for confirmation before modifying actions (installing, updating requirements).
+# =========================================================================================
+
+# =========================================================================================
+# ASSUMPTIONS
+# =========================================================================================
+# - Assumes a Bash (v4+) environment with standard core utilities.
+# - Assumes Python 3 (or configured executable) is installed system-wide.
+# - Assumes the user knows how to create and activate a Python virtual environment.
+# - Assumes the script is executed AFTER the target virtual environment has been activated.
+# - Assumes the script is run from the project's root directory or context where `.venv` and `requirements.txt` should reside.
+# - Assumes write permissions within the project directory and the virtual environment.
+# =========================================================================================
+
+# =========================================================================================
+# SECURITY CONSIDERATIONS
+# =========================================================================================
+# - **Privilege Level:** Runs as the user who executes it. Does not require root/sudo unless file permissions prevent writing to the project/venv dirs.
+# - **Input Sanitization:** Basic checks for options via `getopts`. Relies on external tools (`pip`, `pipreqs`) to handle file paths and package names. No dynamic command execution based on user file content.
+# - **Sensitive Data Handling:** Does not handle passwords or API keys.
+# - **Dependencies:** Relies on `python`, `pip`, `pipreqs`. Ensure these are from trusted sources. `pip install` downloads and executes code from PyPI – inherent risk.
+# - **File Permissions:** Uses standard user permissions for creating/modifying `requirements.txt` and potentially log files. Venv package installation depends on venv permissions.
+# - **Network Exposure:** Connects to PyPI (via pip/pipreqs) to download packages/check versions. Ensure network policies allow this.
+# =========================================================================================
 
 # =========================================================================================
 # SCRIPT EXECUTION ENVIRONMENT & CONFIGURATION
 # =========================================================================================
-
-# --- Bash Strict Mode ---
-set -euo pipefail
-
-# --- Debug Mode ---
-# Uncomment for debugging: Prints each command before execution.
-# set -x
 
 # --- Script Information ---
 readonly SCRIPT_NAME="$(basename "${BASH_SOURCE[0]}")"
