@@ -187,7 +187,9 @@ validate_inputs() {
     log_message "INFO" "Validating inputs and environment..."
 
     # 1. VIRTUAL ENVIRONMENT CHECK (Critical Prerequisite)
-    if [[ -z "${VIRTUAL_ENV}" ]]; then
+    # Use parameter expansion with :- to provide a default (empty string) if unset,
+    # satisfying `set -u` even during the check itself, although -z handles unset correctly.
+    if [[ -z "${VIRTUAL_ENV:-}" ]]; then
         log_message "ERROR" "------------------------------------------------------------------"
         log_message "ERROR" " SCRIPT ABORTED: Python virtual environment not active."
         log_message "ERROR" "------------------------------------------------------------------"
@@ -218,7 +220,10 @@ validate_inputs() {
         # Use CRITICAL level to ensure exit after logging messages
         log_message "CRITICAL" "Virtual environment setup required before script execution."
     fi
-    log_message "INFO" "Active virtual environment detected: ${VIRTUAL_ENV}"
+    # *** FIX APPLIED HERE ***
+    # Use default expansion ${VAR:-} to safely expand even if set -u is picky.
+    # This line is only reached if VIRTUAL_ENV is set and non-empty.
+    log_message "INFO" "Active virtual environment detected: ${VIRTUAL_ENV:-}"
 
     # Validate PROJECT_DIR exists
     if [[ ! -d "${PROJECT_DIR}" ]]; then
