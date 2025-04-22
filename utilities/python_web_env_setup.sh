@@ -539,25 +539,37 @@ main() {
         log_message "CRITICAL" "Check if Python version '${PYTHON_VERSION}' is available in the PPA and review apt output above."
     fi
 
-    # 6. Final Information
+        # 6. Final Information
     log_message "INFO" "====================================================================="
     log_message "INFO" " System Preparation Script Completed! "
     log_message "INFO" "====================================================================="
-    log_message "INFO" "\nYour system should now have the basic tools:"
-    log_message "INFO" " - Python ${PYTHON_VERSION} (including -dev and -venv packages from deadsnakes PPA)"
-    log_message "INFO" " - Standard Build tools, git, nginx, postgresql-dev, supervisor, pipx, etc."
-    log_message "WARN" "\nVERY IMPORTANT - Using Pip with Python ${PYTHON_VERSION}:"
-    log_message "WARN" " - The system 'pip3' (if installed separately) likely manages packages for the system's default Python."
-    log_message "WARN" " - To install packages specifically for Python ${PYTHON_VERSION}, you MUST use a virtual environment:"
-    log_message "INFO" "\n${COLOR_YELLOW}Next Steps for Your Project:${COLOR_RESET}"
-    log_message "INFO" " 1. Create environment: ${COLOR_YELLOW}${python_pkg} -m venv path/to/your/venv${COLOR_RESET}"
-    log_message "INFO" " 2. Activate environment: ${COLOR_YELLOW}source path/to/your/venv/bin/activate${COLOR_RESET}"
-    log_message "INFO" " 3. Install packages: ${COLOR_YELLOW}pip install <package_name>  # <-- This pip uses Python ${PYTHON_VERSION}${COLOR_RESET}"
-    log_message "INFO" " 4. Deactivate when done: ${COLOR_YELLOW}deactivate${COLOR_RESET}"
-    log_message "INFO" "\n${COLOR_YELLOW}Other Next Steps:${COLOR_RESET}"
-    log_message "INFO" " - Install global tools cleanly (like Gunicorn): pipx install gunicorn"
-    log_message "INFO" " - Configure Nginx, Supervisor, PostgreSQL (users/databases), etc. per project requirements."
-    log_message "WARN" "\nNote: If pipx commands don't work in your user shell, you might need to run 'pipx ensurepath' and restart your shell."
+
+    # Use echo -e for better readability of the final summary block, removing log prefixes
+    echo -e "\n${COLOR_GREEN}Your system should now have the basic tools:${COLOR_RESET}"
+    echo -e " - Python ${PYTHON_VERSION} (including -dev and -venv packages from deadsnakes PPA)"
+    echo -e " - Standard Build tools, git, nginx, postgresql-dev, supervisor, pipx, etc."
+
+    # Use WARN color for important notes, but directly via echo
+    echo -e "\n${COLOR_YELLOW}${COLOR_BOLD}VERY IMPORTANT - Using Pip with Python ${PYTHON_VERSION}:${COLOR_RESET}"
+    echo -e "${COLOR_YELLOW} - The system 'pip3' (if installed separately) likely manages packages for the system's default Python.${COLOR_RESET}"
+    echo -e "${COLOR_YELLOW} - To install packages specifically for Python ${PYTHON_VERSION}, you MUST use a virtual environment.${COLOR_RESET}"
+
+    # Use a different color for next steps/commands
+    echo -e "\n${COLOR_BLUE}Next Steps for Your Project:${COLOR_RESET}"
+    echo -e " 1. Create environment: ${COLOR_CYAN}${python_pkg} -m venv path/to/your/venv${COLOR_RESET}"
+    echo -e " 2. Activate environment: ${COLOR_CYAN}source path/to/your/venv/bin/activate${COLOR_RESET}"
+    echo -e " 3. Install packages: ${COLOR_CYAN}pip install <package_name>${COLOR_RESET}  # <-- This pip uses Python ${PYTHON_VERSION}"
+    echo -e " 4. Deactivate when done: ${COLOR_CYAN}deactivate${COLOR_RESET}"
+
+    echo -e "\n${COLOR_BLUE}Other Next Steps:${COLOR_RESET}"
+    echo -e " - Install global tools cleanly (like Gunicorn): ${COLOR_CYAN}pipx install gunicorn${COLOR_RESET}"
+    echo -e " - Configure Nginx, Supervisor, PostgreSQL (users/databases), etc. per project requirements."
+
+    # Note about pipx path
+    echo -e "\n${COLOR_YELLOW}Note: If pipx commands don't work in your user shell, you might need to run 'pipx ensurepath' and restart your shell.${COLOR_RESET}\n"
+
+    # Note: The final "Script completed successfully." message below this will still use log_message
+
 }
 
 # =========================================================================================
