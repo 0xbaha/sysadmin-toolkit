@@ -181,6 +181,7 @@ Scripts are grouped into functional categories. The table below outlines the int
 | ./system-monitoring | [remote_collect_server_data.sh](system-monitoring/remote_collect_server_data.sh) | Collects system/network metrics remotely via SSH; saves to CSV. |
 | ./user-group-management | [reset_homes.sh](user-group-management/reset_homes.sh) | Automates resetting user home directories in /home for consistency. |
 | ./utilities | [check_usernames_github.sh](utilities/check_usernames_github.sh) | Checks availability of usernames on GitHub via HTTP status codes. |
+| ./utilities | [dos2unix_git_repo.sh](utilities/dos2unix_git_repo.sh) | Convert line endings of all Git-tracked files to Unix (LF) format. |
 | ./utilities | [generate_test_files.sh](utilities/generate_test_files.sh) | Generates configurable random files for testing via CLI options. |
 | ./utilities | [manage_py_env.sh](utilities/manage_py_env.sh) | Manages Python virtual environment setup within a project. |
 | ./utilities | [python_web_env_setup.sh](utilities/python_web_env_setup.sh) | Automates Python web env setup with tools on Debian/Ubuntu via PPA. |
