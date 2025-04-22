@@ -182,6 +182,8 @@ Scripts are grouped into functional categories. The table below outlines the int
 | ./user-group-management | [reset_homes.sh](user-group-management/reset_homes.sh) | Automates resetting user home directories in /home for consistency. |
 | ./utilities | [check_usernames_github.sh](utilities/check_usernames_github.sh) | Checks availability of usernames on GitHub via HTTP status codes. |
 | ./utilities | [generate_test_files.sh](utilities/generate_test_files.sh) | Generates configurable random files for testing via CLI options. |
+| ./utilities | [manage_py_env.sh](utilities/manage_py_env.sh) | Manages Python virtual environment setup within a project. |
+| ./utilities | [python_web_env_setup.sh](utilities/python_web_env_setup.sh) | Automates Python web env setup with tools on Debian/Ubuntu via PPA. |
 | ./virtualization | [collect_proxmox_vm.sh](virtualization/collect_proxmox_vm.sh) | Collects VM, storage, network, host info on a Proxmox node. |
 | ./virtualization | [proxmox_check_storage_data2.sh](virtualization/proxmox_check_storage_data2.sh) | Collects Proxmox 'data2' pool free space for PRTG via JSON. |
 | ./virtualization | [proxmox_check_storage_local.sh](virtualization/proxmox_check_storage_local.sh) | Collects Proxmox 'local' pool free space for PRTG via JSON. |
