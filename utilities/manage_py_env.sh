@@ -187,8 +187,6 @@ validate_inputs() {
     log_message "INFO" "Validating inputs and environment..."
 
     # 1. VIRTUAL ENVIRONMENT CHECK (Critical Prerequisite)
-    # Use parameter expansion with :- to provide a default (empty string) if unset,
-    # satisfying `set -u` even during the check itself, although -z handles unset correctly.
     if [[ -z "${VIRTUAL_ENV:-}" ]]; then
         log_message "ERROR" "------------------------------------------------------------------"
         log_message "ERROR" " SCRIPT ABORTED: Python virtual environment not active."
@@ -196,33 +194,38 @@ validate_inputs() {
         local script_path="${BASH_SOURCE[0]}"
         local venv_path_relative="${VENV_DIR}" # Relative path check
 
+        # Get timestamp and construct the error prefix string for manual use
+        local timestamp; timestamp=$(date +"%Y-%m-%d %H:%M:%S %Z")
+        local error_prefix_str="[${timestamp}] [ERROR] - "
+
+        # --- Case 1: Venv directory doesn't exist ---
         if [[ ! -d "${venv_path_relative}" ]]; then
             log_message "ERROR" "Virtual environment directory ('${venv_path_relative}') not found."
-            log_message "ERROR" ""
+            log_message "ERROR" "" # Blank line for spacing
             log_message "ERROR" "You need to create the virtual environment first."
             log_message "ERROR" "Please run the following command in your terminal:"
-            log_message "ERROR" ""
-            echo " ${PYTHON_EXECUTABLE} -m venv ${venv_path_relative}"
-            log_message "ERROR" ""
+            # **MODIFIED LINE:** Print prefix in red, command in default color, to stderr
+            echo -e "${COLOR_RED}${error_prefix_str}${COLOR_RESET}${PYTHON_EXECUTABLE} -m venv ${venv_path_relative}" >&2
+            log_message "ERROR" "" # Blank line
             log_message "ERROR" "After creating, activate it and re-run this script using:"
-            log_message "ERROR" ""
-            echo " source \"${venv_path_relative}/bin/activate\" && \"${script_path}\" \"$@\""
-            log_message "ERROR" ""
+            # **MODIFIED LINE:** Print prefix in red, command in default color, to stderr
+            echo -e "${COLOR_RED}${error_prefix_str}${COLOR_RESET}source \"${venv_path_relative}/bin/activate\" && \"${script_path}\" \"$@\"" >&2
+            log_message "ERROR" "" # Blank line
         else
+        # --- Case 2: Venv directory exists but is not active ---
             log_message "ERROR" "The virtual environment directory ('${venv_path_relative}') exists, but it's not active."
-            log_message "ERROR" ""
+            log_message "ERROR" "" # Blank line
             log_message "ERROR" "Activate the environment first, then re-run the script."
             log_message "ERROR" "Please run the following command in your terminal:"
-            log_message "ERROR" ""
-            echo " source \"${venv_path_relative}/bin/activate\" && \"${script_path}\" \"$@\""
-            log_message "ERROR" ""
+            # **MODIFIED LINE:** Print prefix in red, command in default color, to stderr
+            echo -e "${COLOR_RED}${error_prefix_str}${COLOR_RESET}source \"${venv_path_relative}/bin/activate\" && \"${script_path}\" \"$@\"" >&2
+            log_message "ERROR" "" # Blank line
         fi
+
         # Use CRITICAL level to ensure exit after logging messages
         log_message "CRITICAL" "Virtual environment setup required before script execution."
     fi
-    # *** FIX APPLIED HERE ***
     # Use default expansion ${VAR:-} to safely expand even if set -u is picky.
-    # This line is only reached if VIRTUAL_ENV is set and non-empty.
     log_message "INFO" "Active virtual environment detected: ${VIRTUAL_ENV:-}"
 
     # Validate PROJECT_DIR exists
