@@ -74,4 +74,5 @@ secrets.*
 
 # --- Miscellaneous ---
 # Any other project-specific files that should not be tracked.
+output
 
